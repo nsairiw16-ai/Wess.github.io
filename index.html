@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Khadijati</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Poppins;background:white;color:#ff4e8b;overflow:hidden;position:relative;height:100vh;}
+
+/* FLEX CENTER */
+.flex-center{
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+text-align:center;
+height:100%;
+width:100%;
+}
+
+/* LOADING SCREEN */
+#loading{
+position:fixed;width:100%;height:100%;background:white;
+display:flex;justify-content:center;align-items:center;
+flex-direction:column;text-align:center;z-index:1000;
+}
+#loader{
+width:60px;height:60px;border:5px solid #ff4e8b;
+border-top:5px solid #ffb6c1;
+border-radius:50%;
+animation:spin 1s linear infinite;margin-bottom:20px;
+}
+@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+#loading h1{
+font-family:'Playfair Display';font-size:28px;color:#ff4e8b;
+text-shadow:0 0 5px #ffb6c1,0 0 10px #ff4e8b;
+}
+
+/* LOCK SCREEN / HINT */
+#lock{display:none;}
+#lock input{
+padding:16px;font-size:20px;border-radius:10px;border:2px solid #ff4e8b;margin-top:20px;text-align:center;
+}
+#lock p{
+margin-top:20px;
+font-size:18px;
+color:#ff4e8b;
+text-shadow:0 0 5px #ffb6c1;
+}
+
+/* BACKGROUND FLOATING HEARTS */
+.bg-heart{
+position:absolute;
+color:#ffb6c1;
+font-size:24px;
+opacity:0.2;
+pointer-events:none;
+animation:bgFloat linear infinite;
+}
+@keyframes bgFloat{
+0%{transform:translateY(100vh) rotate(0deg);}
+100%{transform:translateY(-10vh) rotate(360deg);}
+}
+
+/* QUESTION */
+#question{
+display:none;
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%, -50%);
+flex-direction:column;
+text-align:center;
+z-index:10;
+}
+#question h1{
+font-family:'Playfair Display';font-size:42px;
+margin-bottom:50px;
+animation:glow 2s infinite alternate;
+}
+@keyframes glow{
+0%{text-shadow:0 0 10px #ffb6c1,0 0 20px #ff4e8b;}
+50%{text-shadow:0 0 25px #ffb6c1,0 0 50px #ff4e8b;}
+100%{text-shadow:0 0 10px #ffb6c1,0 0 20px #ff4e8b;}
+}
+button{
+padding:22px 70px;font-size:24px;border-radius:50px;border:none;margin:15px;cursor:pointer;transition:0.3s;
+}
+#yesBtn{background:#ff4e8b;color:white;animation:bounceBtn 2s infinite;}
+#yesBtn:hover{transform:scale(1.15);}
+#noBtn{background:transparent;color:#ff4e8b;border:3px solid #ff4e8b;position:relative;transition:transform 0.3s;}
+
+/* LOVE MESSAGE */
+#loveMsg, #finalMsg{
+display:none;
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+width:80%;
+opacity:0;
+transition:opacity 1.5s ease-in-out;
+}
+#loveMsg h1, #finalMsg h1{
+font-family:'Playfair Display';font-size:36px;color:#ff4e8b;
+text-shadow:0 0 15px #ffb6c1,0 0 30px #ff4e8b;margin-bottom:20px;
+}
+#loveMsg p, #finalMsg p{font-size:20px;line-height:1.6;}
+
+/* FLOATING HEARTS */
+.heart{
+position:absolute;font-size:18px;color:#ffb6c1;pointer-events:none;
+animation:floatUp linear infinite;
+}
+@keyframes floatUp{
+0%{transform:translateY(100vh);opacity:1;}
+100%{transform:translateY(-10vh);opacity:0;}
+}
+
+/* SPARKLES */
+.sparkle{
+position:absolute;width:4px;height:4px;background:#ff4e8b;border-radius:50%;
+opacity:0.8;pointer-events:none;
+animation:floatSparkle linear infinite;
+}
+@keyframes floatSparkle{
+0%{transform:translateY(0) scale(0.5);opacity:0.8;}
+50%{opacity:1;transform:translateY(-30px) scale(1);}
+100%{transform:translateY(-60px) scale(0.5);opacity:0;}
+}
+
+/* FIREWORKS */
+.fire{
+position:absolute;width:6px;height:6px;background:#ff4e8b;border-radius:50%;
+animation:explode 1s forwards;
+}
+@keyframes explode{
+to{transform:translate(var(--x),var(--y));opacity:0}
+}
+
+/* WRONG NOTIFICATION */
+#notification{
+position:fixed;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+background:#ff4e8b;
+color:white;
+padding:15px 25px;
+border-radius:25px;
+font-family:'Poppins';
+font-size:18px;
+display:none;
+z-index:9999;
+box-shadow:0 0 15px #ffb6c1;
+animation:fadeinout 2s forwards;
+}
+@keyframes fadeinout{
+0%{opacity:0;}
+10%{opacity:1;}
+90%{opacity:1;}
+100%{opacity:0;}
+}
+
+/* BOUNCE ANIMATION */
+@keyframes bounceBtn{
+0%,100%{transform:translateY(0);}
+50%{transform:translateY(-15px);}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading" class="flex-center">
+<div id="loader"></div>
+<h1>Loading our love… 💖</h1>
+</div>
+
+<!-- LOCK SCREEN / HINT -->
+<div id="lock" class="flex-center">
+<h1>Enter the Hint ❤️</h1>
+<p>Hint: The first time I proposed to you ❤️</p>
+<input id="pass" placeholder="Type the date...">
+</div>
+
+<!-- QUESTION -->
+<div id="question" class="flex-center">
+<h1>Will You Be My Valentine?</h1>
+<button id="yesBtn">Yes 🤍</button>
+<button id="noBtn">Let me think 😌</button>
+</div>
+
+<!-- LOVE MESSAGE -->
+<div id="loveMsg">
+<h1>She Said YES! ❤️</h1>
+<p>Khadijati, I will love you forever ❤️<br>
+May our love never end, and may every moment with you be magical 💖</p>
+</div>
+
+<!-- FINAL MESSAGE -->
+<div id="finalMsg">
+<h1>Your Wassimek ❤️</h1>
+<p>loves you so so much much 💖</p>
+</div>
+
+<!-- WRONG NOTIFICATION -->
+<div id="notification">Wrong command!</div>
+
+<script>
+// LOADING SCREEN
+setTimeout(()=>{
+document.getElementById("loading").style.display="none";
+document.getElementById("lock").style.display="flex";
+},2500);
+
+// LOCK SCREEN HINT
+document.getElementById("pass").addEventListener("input", e=>{
+if(e.target.value==="10122025"){
+document.getElementById("lock").style.display="none";
+document.getElementById("question").style.display="flex";
+startFloatingHearts();
+startSparkles();
+startBackgroundHearts();
+}
+});
+
+// FLOATING HEARTS
+function startFloatingHearts(){
+setInterval(()=>{
+let heart=document.createElement("div");
+heart.className="heart";
+heart.innerText="❤️";
+heart.style.left=Math.random()*100+"vw";
+heart.style.fontSize=(12+Math.random()*20)+"px";
+heart.style.animationDuration=(4+Math.random()*4)+"s";
+document.body.appendChild(heart);
+setTimeout(()=>heart.remove(),8000);
+},300);
+}
+
+// BACKGROUND HEARTS
+function startBackgroundHearts(){
+for(let i=0;i<25;i++){
+let bgH=document.createElement("div");
+bgH.className="bg-heart";
+bgH.innerText="❤️";
+bgH.style.left=Math.random()*100+"vw";
+bgH.style.top=Math.random()*100+"vh";
+bgH.style.fontSize=(15+Math.random()*20)+"px";
+bgH.style.animationDuration=(20+Math.random()*20)+"s";
+document.body.appendChild(bgH);
+}
+}
+
+// ROMANTIC SPARKLES
+function startSparkles(){
+setInterval(()=>{
+let s=document.createElement("div");
+s.className="sparkle";
+s.style.left=Math.random()*100+"vw";
+s.style.top=Math.random()*100+"vh";
+s.style.width=(2+Math.random()*4)+"px";
+s.style.height=(2+Math.random()*4)+"px";
+s.style.animationDuration=(2+Math.random()*3)+"s";
+document.body.appendChild(s);
+setTimeout(()=>s.remove(),5000);
+},400);
+}
+
+// YES BUTTON CLICK
+document.getElementById("yesBtn").addEventListener("click", ()=>{
+document.getElementById("question").style.display="none";
+
+let loveMsg=document.getElementById("loveMsg");
+loveMsg.style.display="block";
+setTimeout(()=>loveMsg.style.opacity=1,100);
+
+launchFireworks();
+
+setTimeout(()=>{
+loveMsg.style.opacity=0;
+setTimeout(()=>{
+loveMsg.style.display="none";
+let finalMsg=document.getElementById("finalMsg");
+finalMsg.style.display="block";
+setTimeout(()=>finalMsg.style.opacity=1,100);
+},1500);
+},6000);
+});
+
+// NO BUTTON ESCAPE + SHRINK + WRONG COMMAND
+const noBtn=document.getElementById("noBtn");
+let noSize = 1;
+
+noBtn.addEventListener("click", ()=>{
+noSize -= 0.1;
+if(noSize < 0.1) noSize = 0.1;
+noBtn.style.transform = `scale(${noSize})`;
+
+let notif = document.getElementById("notification");
+notif.style.display="block";
+notif.style.animation="none";
+void notif.offsetWidth;
+notif.style.animation="fadeinout 2s forwards";
+
+moveNoButton();
+});
+
+noBtn.addEventListener("mouseover", moveNoButton);
+
+const yesBtn=document.getElementById("yesBtn");
+const question=document.getElementById("question");
+
+function moveNoButton() {
+    const btnWidth = noBtn.offsetWidth;
+    const btnHeight = noBtn.offsetHeight;
+    const yesRect = yesBtn.getBoundingClientRect();
+    const questionRect = question.getBoundingClientRect();
+    let newLeft, newTop, attempts = 0;
+
+    do {
+        newLeft = Math.random() * (window.innerWidth - btnWidth);
+        newTop = Math.random() * (window.innerHeight - btnHeight);
+        attempts++;
+    } while (
+        ((newLeft + btnWidth > yesRect.left && newLeft < yesRect.right) &&
+         (newTop + btnHeight > yesRect.top && newTop < yesRect.bottom)) ||
+        ((newLeft + btnWidth > questionRect.left && newLeft < questionRect.right) &&
+         (newTop + btnHeight > questionRect.top && newTop < questionRect.bottom)) &&
+        attempts < 50
+    );
+
+    noBtn.style.position = "absolute";
+    noBtn.style.left = newLeft + "px";
+    noBtn.style.top = newTop + "px";
+}
+
+// FIREWORKS
+function launchFireworks(){
+for(let i=0;i<80;i++){
+let f=document.createElement("div");
+f.className="fire";
+f.style.left="50%";
+f.style.top="50%";
+f.style.setProperty("--x",(Math.random()*600-300)+"px");
+f.style.setProperty("--y",(Math.random()*600-300)+"px");
+document.body.appendChild(f);
+setTimeout(()=>f.remove(),1000);
+}
+}
+</script>
+
+</body>
+</html>
